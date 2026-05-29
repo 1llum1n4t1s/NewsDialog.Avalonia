@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NewsDemoApp.MainWindow"
+        Width="420" Height="320"
+        Title="NewsDialog.Avalonia Demo"
+        Background="Transparent"
+        ExtendClientAreaTitleBarHeightHint="32"
+        ExtendClientAreaToDecorationsHint="True"
+        TransparencyLevelHint="AcrylicBlur,Blur,None">
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                     MaterialOpacity="0.85"
+                                     TintColor="{DynamicResource Demo.AcrylicTint}"
+                                     TintOpacity="0.9"/>
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+
+    <StackPanel Margin="24,44,24,24" Spacing="10" VerticalAlignment="Center">
+      <TextBlock Text="NewsDialog.Avalonia デモ" FontSize="18" FontWeight="Bold"/>
+      <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Click="OnShowNormal" Content="通常お知らせを表示"/>
+      <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Click="OnShowEmergency" Content="緊急ブロッキングを表示 (手動更新告知)"/>
+      <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Click="OnShowJapanese" Content="日本語ローカライズで表示"/>
+      <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+              Click="OnShowFeed" Content="実フィードから表示 (R2/Worker)"/>
+      <TextBlock x:Name="Result" Margin="0,8,0,0" Foreground="Gray" TextWrapping="Wrap"/>
+    </StackPanel>
+  </Panel>
+</Window>

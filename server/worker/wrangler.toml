@@ -1,0 +1,13 @@
+name = "news-feed"
+main = "src/index.js"
+compatibility_date = "2026-05-01"
+
+# カスタムドメインの /news.json をこの Worker に向ける場合 (例):
+# routes = [
+#   { pattern = "lhamiel.nephilim.jp/news.json", custom_domain = false, zone_name = "nephilim.jp" }
+# ]
+
+# お知らせを KV で管理する場合はバインドを有効化し、index.js の KV 版を使う:
+# [[kv_namespaces]]
+# binding = "NEWS"
+# id = "<your-kv-namespace-id>"

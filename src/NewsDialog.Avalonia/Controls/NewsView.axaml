@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:NewsDialog"
+             xmlns:wv="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.WebView"
+             mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="560"
+             x:Class="NewsDialog.NewsView"
+             x:DataType="vm:NewsViewModel">
+
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://NewsDialog/Themes/Themes.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+      <vm:SeverityToBrushConverter x:Key="SeverityToBrush"/>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <StyleInclude Source="avares://NewsDialog/Themes/Styles.axaml"/>
+  </UserControl.Styles>
+
+  <Panel>
+    <!-- ============ 通常コンテンツ ============ -->
+    <Grid IsVisible="{Binding !ShowBlocking}">
+
+      <!-- Loading -->
+      <StackPanel IsVisible="{Binding IsLoading}" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <ProgressBar IsIndeterminate="True" Width="240" Height="6"/>
+        <TextBlock Margin="0,12,0,0" HorizontalAlignment="Center" Text="{Binding Strings.LoadingMessage}"/>
+      </StackPanel>
+
+      <!-- Empty -->
+      <TextBlock IsVisible="{Binding IsEmpty}" HorizontalAlignment="Center" VerticalAlignment="Center"
+                 Foreground="{DynamicResource News.SubtleForegroundBrush}"
+                 Text="{Binding Strings.EmptyMessage}"/>
+
+      <!-- Failed -->
+      <StackPanel IsVisible="{Binding IsFailed}" MaxWidth="420" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock HorizontalAlignment="Center" FontWeight="Bold"
+                   Foreground="{DynamicResource News.ErrorBrush}" Text="{Binding Strings.ErrorHeader}"/>
+        <TextBlock Margin="0,8" TextWrapping="Wrap" TextAlignment="Center" Text="{Binding ErrorMessage}"/>
+        <Button Classes="primary" HorizontalAlignment="Center"
+                Command="{Binding RetryCommand}" Content="{Binding Strings.Retry}"/>
+      </StackPanel>
+
+      <!-- Loaded: マスター/詳細 -->
+      <Grid IsVisible="{Binding IsLoaded}" ColumnDefinitions="300,*">
+        <DockPanel Grid.Column="0" Margin="10">
+          <!-- カテゴリ タブ -->
+          <ListBox DockPanel.Dock="Top" Classes="tabs"
+                   ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+          </ListBox>
+
+          <!-- 一覧 -->
+          <ListBox Classes="newslist" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="vm:NewsItem">
+                <Grid ColumnDefinitions="4,*">
+                  <Border Grid.Column="0" Width="4" CornerRadius="2"
+                          Background="{Binding Severity, Converter={StaticResource SeverityToBrush}}"/>
+                  <StackPanel Grid.Column="1" Margin="10,4" Spacing="2">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                      <Border IsVisible="{Binding IsNew}" VerticalAlignment="Center"
+                              Background="{DynamicResource News.AccentBrush}" CornerRadius="3" Padding="4,0">
+                        <TextBlock Text="NEW" FontSize="9" Foreground="White"/>
+                      </Border>
+                    </StackPanel>
+                    <TextBlock Text="{Binding PublishedAt, StringFormat='{}{0:yyyy-MM-dd}'}"
+                               FontSize="11" Foreground="{DynamicResource News.SubtleForegroundBrush}"/>
+                  </StackPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+
+        <!-- 詳細 -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="0,10,10,10">
+          <StackPanel Grid.Row="0" Margin="4,0,4,8" Spacing="3">
+            <TextBlock Text="{Binding SelectedItem.Title}" FontWeight="Bold" FontSize="16" TextWrapping="Wrap"/>
+            <TextBlock Text="{Binding SelectedItem.PublishedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm}'}"
+                       FontSize="11" Foreground="{DynamicResource News.SubtleForegroundBrush}"/>
+          </StackPanel>
+
+          <Border Grid.Row="1" CornerRadius="6" ClipToBounds="True"
+                  BorderThickness="1" BorderBrush="{DynamicResource News.BorderBrush}">
+            <wv:NativeWebView Source="{Binding CurrentContentUri}"/>
+          </Border>
+
+          <Button Grid.Row="2" Margin="0,10,0,0" Classes="primary" HorizontalAlignment="Right"
+                  IsVisible="{Binding SelectedHasAction}"
+                  Command="{Binding InvokeActionCommand}" CommandParameter="{Binding SelectedItem}"
+                  Content="{Binding SelectedActionLabel}"/>
+        </Grid>
+      </Grid>
+    </Grid>
+
+    <!-- ============ 緊急ブロッキング層 (通常コンテンツとは IsVisible で排他 → WebView の airspace 衝突を回避) ============ -->
+    <Border IsVisible="{Binding ShowBlocking}" Background="#CC000000">
+      <Border Classes="emergencyCard" MaxWidth="460" Margin="24"
+              HorizontalAlignment="Center" VerticalAlignment="Center">
+        <StackPanel Margin="24" Spacing="14">
+          <StackPanel Orientation="Horizontal" Spacing="10">
+            <Path Width="22" Height="22" Stretch="Uniform" VerticalAlignment="Center"
+                  Fill="{DynamicResource News.ErrorBrush}" Data="{StaticResource News.WarningGeometry}"/>
+            <TextBlock Text="{Binding Strings.EmergencyHeader}" FontWeight="Bold" FontSize="16"
+                       VerticalAlignment="Center" Foreground="{DynamicResource News.ErrorBrush}"/>
+          </StackPanel>
+          <TextBlock Text="{Binding BlockingItem.Title}" FontWeight="SemiBold" FontSize="15" TextWrapping="Wrap"/>
+          <TextBlock Text="{Binding BlockingItem.Summary}" TextWrapping="Wrap"
+                     Foreground="{DynamicResource News.ForegroundBrush}"/>
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button IsVisible="{Binding BlockingHasAction}" Classes="danger"
+                    Command="{Binding InvokeActionCommand}" CommandParameter="{Binding BlockingItem}"
+                    Content="{Binding BlockingActionLabel}"/>
+            <Button Command="{Binding AcknowledgeBlockingCommand}" Content="{Binding Strings.Acknowledge}"/>
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </Border>
+  </Panel>
+</UserControl>

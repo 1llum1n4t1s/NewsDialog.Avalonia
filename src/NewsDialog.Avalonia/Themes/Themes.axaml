@@ -1,0 +1,62 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <ResourceDictionary.ThemeDictionaries>
+
+    <!-- Light -->
+    <ResourceDictionary x:Key="Light">
+      <Color x:Key="News.WindowBackgroundColor">#FFFFFFFF</Color>
+      <Color x:Key="News.TitleBarColor">#FFF5F5F5</Color>
+      <Color x:Key="News.CardColor">#FFFFFFFF</Color>
+      <Color x:Key="News.BorderColor">#FFDDDDDD</Color>
+      <Color x:Key="News.ForegroundColor">#FF202020</Color>
+      <Color x:Key="News.SubtleForegroundColor">#FF707070</Color>
+      <Color x:Key="News.AccentColor">#FF0066FF</Color>
+      <Color x:Key="News.ErrorColor">#FFDA3D3D</Color>
+      <Color x:Key="News.WarningColor">#FFE08600</Color>
+      <Color x:Key="News.SelectionColor">#1A0066FF</Color>
+
+      <SolidColorBrush x:Key="News.WindowBackground" Color="{StaticResource News.WindowBackgroundColor}"/>
+      <SolidColorBrush x:Key="News.TitleBarBrush" Color="{StaticResource News.TitleBarColor}"/>
+      <SolidColorBrush x:Key="News.CardBrush" Color="{StaticResource News.CardColor}"/>
+      <SolidColorBrush x:Key="News.BorderBrush" Color="{StaticResource News.BorderColor}"/>
+      <SolidColorBrush x:Key="News.ForegroundBrush" Color="{StaticResource News.ForegroundColor}"/>
+      <SolidColorBrush x:Key="News.SubtleForegroundBrush" Color="{StaticResource News.SubtleForegroundColor}"/>
+      <SolidColorBrush x:Key="News.AccentBrush" Color="{StaticResource News.AccentColor}"/>
+      <SolidColorBrush x:Key="News.ErrorBrush" Color="{StaticResource News.ErrorColor}"/>
+      <SolidColorBrush x:Key="News.WarningBrush" Color="{StaticResource News.WarningColor}"/>
+      <SolidColorBrush x:Key="News.SelectionBrush" Color="{StaticResource News.SelectionColor}"/>
+    </ResourceDictionary>
+
+    <!-- Dark -->
+    <ResourceDictionary x:Key="Dark">
+      <Color x:Key="News.WindowBackgroundColor">#FF1E1E1E</Color>
+      <Color x:Key="News.TitleBarColor">#FF252526</Color>
+      <Color x:Key="News.CardColor">#FF2A2A2C</Color>
+      <Color x:Key="News.BorderColor">#FF3F3F3F</Color>
+      <Color x:Key="News.ForegroundColor">#FFE0E0E0</Color>
+      <Color x:Key="News.SubtleForegroundColor">#FF9A9A9A</Color>
+      <Color x:Key="News.AccentColor">#FF4A9EFF</Color>
+      <Color x:Key="News.ErrorColor">#FFFF6B6B</Color>
+      <Color x:Key="News.WarningColor">#FFFFB454</Color>
+      <Color x:Key="News.SelectionColor">#332A82FF</Color>
+
+      <SolidColorBrush x:Key="News.WindowBackground" Color="{StaticResource News.WindowBackgroundColor}"/>
+      <SolidColorBrush x:Key="News.TitleBarBrush" Color="{StaticResource News.TitleBarColor}"/>
+      <SolidColorBrush x:Key="News.CardBrush" Color="{StaticResource News.CardColor}"/>
+      <SolidColorBrush x:Key="News.BorderBrush" Color="{StaticResource News.BorderColor}"/>
+      <SolidColorBrush x:Key="News.ForegroundBrush" Color="{StaticResource News.ForegroundColor}"/>
+      <SolidColorBrush x:Key="News.SubtleForegroundBrush" Color="{StaticResource News.SubtleForegroundColor}"/>
+      <SolidColorBrush x:Key="News.AccentBrush" Color="{StaticResource News.AccentColor}"/>
+      <SolidColorBrush x:Key="News.ErrorBrush" Color="{StaticResource News.ErrorColor}"/>
+      <SolidColorBrush x:Key="News.WarningBrush" Color="{StaticResource News.WarningColor}"/>
+      <SolidColorBrush x:Key="News.SelectionBrush" Color="{StaticResource News.SelectionColor}"/>
+    </ResourceDictionary>
+
+  </ResourceDictionary.ThemeDictionaries>
+
+  <!-- アイコン Geometry (テーマ非依存。色は Path.Fill 側で DynamicResource 解決) -->
+  <StreamGeometry x:Key="News.WarningGeometry">M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z</StreamGeometry>
+  <StreamGeometry x:Key="News.InfoGeometry">M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z</StreamGeometry>
+
+</ResourceDictionary>

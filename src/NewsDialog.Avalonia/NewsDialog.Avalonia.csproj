@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <RootNamespace>NewsDialog</RootNamespace>
+    <AssemblyName>NewsDialog</AssemblyName>
+
+    <!-- NativeAOT で消費される前提 (Lhamiel が NativeAOT)。trim/AOT 解析を有効化して事故を未然に防ぐ。 -->
+    <IsAotCompatible>true</IsAotCompatible>
+
+    <!-- NuGet パッケージ メタデータ (Directory.Build.props で集約済みの項目はここに書かない) -->
+    <IsPackable>true</IsPackable>
+    <PackageId>NewsDialog.Avalonia</PackageId>
+    <Title>News / Announcements for Avalonia</Title>
+    <Description>Avalonia 12 で動くソーシャルゲーム風お知らせ画面。一覧はネイティブ、本文は公式 NativeWebView で HTML 表示。緊急ブロッキング告知対応。Window / UserControl / ViewModel の 3 段提供。</Description>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.0.4" />
+    <PackageReference Include="Avalonia.Controls.WebView" Version="12.0.1" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="SuperLightLogger" Version="1.0.7" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.300" PrivateAssets="All" />
+  </ItemGroup>
+</Project>

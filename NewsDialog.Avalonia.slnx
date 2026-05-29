@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/NewsDemoApp/NewsDemoApp.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/NewsDialog.Avalonia/NewsDialog.Avalonia.csproj" />
+  </Folder>
+</Solution>

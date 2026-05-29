@@ -1,0 +1,89 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:NewsDialog"
+        mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="560"
+        x:Class="NewsDialog.NewsWindow"
+        x:DataType="vm:NewsViewModel"
+        x:Name="ThisWindow"
+        Title="{Binding Strings.Title}"
+        WindowStartupLocation="CenterOwner"
+        Background="Transparent"
+        TransparencyLevelHint="AcrylicBlur,Blur,None">
+
+  <Window.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://NewsDialog/Themes/Themes.axaml"/>
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Window.Resources>
+
+  <Window.Styles>
+    <StyleInclude Source="avares://NewsDialog/Themes/Styles.axaml"/>
+  </Window.Styles>
+
+  <Panel>
+    <!-- アクリル背景 (System chrome 時はコードビハインドで IsVisible=False) -->
+    <ExperimentalAcrylicBorder x:Name="AcrylicBackdrop" IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial BackgroundSource="Digger"
+                                     MaterialOpacity="0.85"
+                                     TintColor="{DynamicResource News.WindowBackgroundColor}"
+                                     TintOpacity="0.9"/>
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+
+    <!-- System chrome 時のソリッド フォールバック背景 -->
+    <Border x:Name="SolidBackdrop"
+            IsHitTestVisible="False"
+            IsVisible="False"
+            Background="{DynamicResource News.WindowBackground}"/>
+
+    <Grid RowDefinitions="Auto,*">
+
+      <!-- カスタム タイトルバー (ChromeMode == Custom 時) -->
+      <Grid Grid.Row="0" Height="28" x:Name="CustomTitleBar">
+        <Border Background="Transparent" PointerPressed="OnTitleBarPointerPressed"/>
+
+        <Path Width="14" Height="14"
+              Margin="10,0,0,0"
+              Stretch="Uniform"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Center"
+              Data="{StaticResource News.InfoGeometry}"
+              Fill="{DynamicResource News.ForegroundBrush}"/>
+
+        <TextBlock FontWeight="Bold"
+                   Text="{Binding Strings.Title}"
+                   Foreground="{DynamicResource News.ForegroundBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   IsHitTestVisible="False"/>
+
+        <Button x:Name="BtnClose"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Stretch"
+                Width="46"
+                Padding="0"
+                Background="Transparent"
+                BorderThickness="0"
+                Foreground="{DynamicResource News.ForegroundBrush}"
+                Click="OnCloseClicked">
+          <Path Width="10" Height="10"
+                Stretch="Uniform"
+                Stroke="{DynamicResource News.ForegroundBrush}"
+                StrokeThickness="1.2"
+                Data="M 0,0 L 10,10 M 10,0 L 0,10"/>
+        </Button>
+      </Grid>
+
+      <!-- 本体 -->
+      <vm:NewsView Grid.Row="1"
+                   x:Name="Body"
+                   DataContext="{Binding}"/>
+
+    </Grid>
+  </Panel>
+</Window>

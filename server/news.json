@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-05-29T00:00:00Z",
+  "items": [
+    {
+      "id": "emergency-autoupdate-2026-05-29",
+      "title": "重要: 自動更新の不具合について",
+      "category": "重要",
+      "severity": "Emergency",
+      "isBlocking": true,
+      "publishedAt": "2026-05-29T03:00:00Z",
+      "summary": "一部バージョンで自動更新が失敗する不具合が判明しました。お手数ですが下のボタンから最新版を手動でダウンロードしてください。",
+      "actionLabel": "最新版をダウンロード",
+      "actionUrl": "https://lhamiel.nephilim.jp/",
+      "maxAppVersion": "1.0.173",
+      "locales": ["ja"]
+    },
+    {
+      "id": "update-1.0.174",
+      "title": "アップデート 1.0.174 を公開しました",
+      "category": "アップデート",
+      "severity": "Important",
+      "publishedAt": "2026-05-28T10:00:00Z",
+      "contentUrl": "https://lhamiel.nephilim.jp/news/1.0.174.html"
+    },
+    {
+      "id": "welcome",
+      "title": "Lhamiel をご利用いただきありがとうございます",
+      "category": "お知らせ",
+      "severity": "Normal",
+      "publishedAt": "2026-05-01T00:00:00Z",
+      "inlineHtml": "<!doctype html><meta charset=\"utf-8\"><p>ご意見・ご要望はお気軽にどうぞ 🐈‍⬛</p>"
+    }
+  ]
+}
