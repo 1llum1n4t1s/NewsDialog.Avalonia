@@ -1,11 +1,11 @@
-# NewsDialog.Avalonia — 開発者向けメモ（Claude/クロ用）
+# NewsDialog.Avalonia — 開発者・Claude Code 向けメモ
 
-Avalonia 12 のお知らせ画面ライブラリ。姉妹ライブラリ `VelopackUpdateDialog.Avalonia` と作法を揃えている。
+このファイルは、このリポジトリで作業する Claude Code 向けのガイダンスを提供する。Avalonia 12 のお知らせ画面ライブラリ。姉妹ライブラリ `VelopackUpdateDialog.Avalonia` と作法を揃えている。
 
 ## 立ち位置 / 経緯
 
 - 大ヒット中の Lhamiel（NativeAOT ビルド）で自動更新が壊れたインシデントを受け、**緊急アナウンスをアプリ内で確実に届ける**ために新設。
-- したがって **NativeAOT 安全性は最優先制約**。消費側（Lhamiel）が NativeAOT のため、AOT で動かないコードは入れない。
+- したがって **NativeAOT 安全性は最優先制約**。消費側（Lhamiel）が NativeAOT のため、NativeAOT で動くコードだけを入れる（AOT で動かないコードは入れない）。
 
 ## アーキテクチャ（3 段提供）
 
@@ -15,9 +15,9 @@ Avalonia 12 のお知らせ画面ライブラリ。姉妹ライブラリ `Velopa
 
 ## NativeAOT で守ること
 
-- JSON は **`NewsJsonContext`（System.Text.Json ソースジェネレータ）経由**で読む。`JsonSerializer` の反射オーバーロードは使わない。
-- バージョン比較は **`System.Version`**（フレームワーク同梱・AOT 安全）。`NuGet.Versioning` は入れない（Lhamiel の AOT クラッシュの原因がこれだった）。
-- `csproj` に `<IsAotCompatible>true</IsAotCompatible>` を入れて trim/AOT 解析を常時オン。`TreatWarningsAsErrors=true` なので **警告が出たらビルドが落ちる＝AOT 違反を早期検出**する設計。
+- JSON は **`NewsJsonContext`（System.Text.Json ソースジェネレータ）経由**で読む（`JsonSerializer` の反射オーバーロードは使わない）。
+- バージョン比較は **`System.Version`**（フレームワーク同梱・AOT 安全）を使う。`NuGet.Versioning` は入れない（Lhamiel の AOT クラッシュの原因がこれだった）。
+- `csproj` に `<IsAotCompatible>true</IsAotCompatible>` を入れて trim/AOT 解析を常時オンにする。`TreatWarningsAsErrors=true` なので **警告が出たらビルドが落ちる＝AOT 違反を早期検出**する設計。
 - 新しい依存を足すときは、まず NativeAOT 対応を確認してから入れる。
 
 ## WebView の扱い（重要）
