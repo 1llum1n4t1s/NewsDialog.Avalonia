@@ -52,7 +52,7 @@ public partial class MainWindow : Window
                 Summary = "一部バージョンで自動更新が失敗する不具合が判明しました。" +
                           "お手数ですが下のボタンから最新版を手動でダウンロードしてください。",
                 ActionLabel = "最新版をダウンロード",
-                ActionUrl = new Uri("https://lhamiel.nephilim.jp/"),
+                ActionUrl = new Uri("https://lhamiel.kagayoi.com/"),
             },
         };
 
@@ -78,7 +78,7 @@ public partial class MainWindow : Window
             Context = new NewsContext { AppVersion = "1.0.172", Locale = "ja", Channel = "release" },
         };
 
-        var result = await NewsWindow.ShowAsync(this, "https://lhamiel.nephilim.jp/news.json", options);
+        var result = await NewsWindow.ShowAsync(this, "https://lhamiel.kagayoi.com/news.json", options);
         Result.Text = result.Error is null
             ? $"Outcome: {result.Outcome}"
             : $"Outcome: {result.Outcome} / {result.Error.Message}";

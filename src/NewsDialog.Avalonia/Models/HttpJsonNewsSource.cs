@@ -22,7 +22,7 @@ public sealed class HttpJsonNewsSource : INewsSource
     private readonly HttpClient _http;
 
     /// <summary>フィード URL (文字列) から生成する。</summary>
-    /// <param name="baseUrl">例: <c>https://lhamiel.nephilim.jp/news.json</c></param>
+    /// <param name="baseUrl">例: <c>https://lhamiel.kagayoi.com/news.json</c></param>
     /// <param name="httpClient">共有したい <see cref="HttpClient"/>。null なら内部の共有インスタンス。</param>
     public HttpJsonNewsSource(string baseUrl, HttpClient? httpClient = null)
         : this(new Uri(baseUrl, UriKind.Absolute), httpClient)

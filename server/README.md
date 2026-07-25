@@ -5,10 +5,10 @@ NewsDialog.Avalonia のフィードを配る 2 方式のサンプル。どちら
 ## 方式 A: R2 静的 JSON（最小）
 
 1. `news.json` を R2 バケットにアップロード。
-2. R2 をカスタムドメインに公開（例: `https://lhamiel.nephilim.jp/news.json`）。
+2. R2 をカスタムドメインに公開（例: `https://lhamiel.kagayoi.com/news.json`）。
 3. クライアント:
    ```csharp
-   await NewsWindow.ShowAsync(this, "https://lhamiel.nephilim.jp/news.json", options);
+   await NewsWindow.ShowAsync(this, "https://lhamiel.kagayoi.com/news.json", options);
    ```
 4. ターゲティング（バージョン/ロケール/期限）は **クライアント側**で `minAppVersion` 等を見て自動フィルタ。
 

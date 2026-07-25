@@ -34,7 +34,7 @@ public sealed partial class NewsViewModel : ObservableObject
     }
 
     /// <summary>フィード URL から <see cref="HttpJsonNewsSource"/> を内部生成する便利コンストラクタ。</summary>
-    /// <param name="feedUrl">例: <c>https://lhamiel.nephilim.jp/news.json</c></param>
+    /// <param name="feedUrl">例: <c>https://lhamiel.kagayoi.com/news.json</c></param>
     /// <param name="options">表示・振る舞いオプション。</param>
     public NewsViewModel(string feedUrl, NewsOptions? options = null)
         : this(new HttpJsonNewsSource(feedUrl), options)

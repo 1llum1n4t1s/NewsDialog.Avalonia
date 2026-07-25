@@ -17,7 +17,7 @@ const ANNOUNCEMENTS = [
     summary:
       "一部バージョンで自動更新が失敗する不具合が判明しました。下のボタンから最新版を手動でダウンロードしてください。",
     actionLabel: "最新版をダウンロード",
-    actionUrl: "https://lhamiel.nephilim.jp/",
+    actionUrl: "https://lhamiel.kagayoi.com/",
     // 1.0.173 以下にだけ出す (= 壊れている旧クライアントを狙い撃ち)
     maxAppVersion: "1.0.173",
     locales: ["ja"],
@@ -28,7 +28,7 @@ const ANNOUNCEMENTS = [
     category: "アップデート",
     severity: "Important",
     publishedAt: "2026-05-28T10:00:00Z",
-    contentUrl: "https://lhamiel.nephilim.jp/news/1.0.174.html",
+    contentUrl: "https://lhamiel.kagayoi.com/news/1.0.174.html",
   },
 ];
 

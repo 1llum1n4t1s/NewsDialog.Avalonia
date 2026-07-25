@@ -4,7 +4,7 @@ compatibility_date = "2026-05-01"
 
 # カスタムドメインの /news.json をこの Worker に向ける場合 (例):
 # routes = [
-#   { pattern = "lhamiel.nephilim.jp/news.json", custom_domain = false, zone_name = "nephilim.jp" }
+#   { pattern = "lhamiel.kagayoi.com/news.json", custom_domain = false, zone_name = "kagayoi.com" }
 # ]
 
 # お知らせを KV で管理する場合はバインドを有効化し、index.js の KV 版を使う:
