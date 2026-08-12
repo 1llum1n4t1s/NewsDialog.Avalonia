@@ -45,3 +45,12 @@ dotnet run --project samples/NewsDemoApp           # デモ（緊急ブロッキ
 ## 既読管理について
 
 - 仕様上 **既読管理はしない（表示のみ）**。「NEW」バッジは公開日からの経過日数（`NewsDefaults.NewBadgeDays`）で出す recency バッジ。
+
+## ドメイン移行（2026-07 開始・期限 2027/05/31）
+
+屋号を **Kagayoi** に統一したため、配信ドメインを `nephilim.jp` から `kagayoi.com` へ移行中。方針の全体像はユーザーグローバルの `CLAUDE.md` §屋号とドメイン を参照する。
+
+- **旧ドメイン `nephilim.jp` はレジストラで廃止申請済みで 2027/05/31 に失効する**（延長しない）。それまでに出荷済みバイナリを新ドメインへ移行しきる。
+- 旧ホストの Worker route / custom domain は**期限まで消さない**。消すと出荷済みアプリの自動更新が止まる。
+- `nephilim.jp` の Redirect Rules は `/` だけを 301 する。`releases.*.json` / `*.nupkg` / `*-Setup.exe` は転送せず R2 が配信を続ける。
+- 配信先ホストは `lhamiel.kagayoi.com`（`wrangler.toml` の routes はコメントアウト状態）。旧 `lhamiel.nephilim.jp` を参照する記述が残っていないか、変更時に確認する。
