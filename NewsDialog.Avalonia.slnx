@@ -5,4 +5,7 @@
   <Folder Name="/src/">
     <Project Path="src/NewsDialog.Avalonia/NewsDialog.Avalonia.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NewsDialog.Avalonia.Tests/NewsDialog.Avalonia.Tests.csproj" />
+  </Folder>
 </Solution>

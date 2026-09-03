@@ -4,6 +4,7 @@ updates:
     directories:
       - "/src/NewsDialog.Avalonia"
       - "/samples/NewsDemoApp"
+      - "/tests/NewsDialog.Avalonia.Tests"
     schedule:
       interval: "weekly"
       day: "monday"
