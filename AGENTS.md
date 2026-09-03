@@ -2,6 +2,8 @@
 
 このファイルは、このリポジトリで作業する Claude Code 向けのガイダンスを提供する。Avalonia 12 のお知らせ画面ライブラリ。姉妹ライブラリ `VelopackUpdateDialog.Avalonia` と作法を揃えている。
 
+システム構造・データフロー・設計判断の正本は [`DESIGN.md`](DESIGN.md)、パッケージ利用方法は [`README.md`](README.md) を参照する。
+
 ## 立ち位置 / 経緯
 
 - 大ヒット中の Lhamiel（NativeAOT ビルド）で自動更新が壊れたインシデントを受け、**緊急アナウンスをアプリ内で確実に届ける**ために新設。
@@ -33,14 +35,17 @@
 - CommunityToolkit.Mvvm の `[ObservableProperty] public partial` と `[RelayCommand]` を使う。
 - ログは SuperLightLogger（`LogManager.GetLogger`）。
 
-## ビルド / 動作確認
+## ビルド / テスト / 動作確認
+
+全プロジェクトは `net10.0` を対象にするため、.NET 10 SDK を使う。通常の変更ではビルドと .NET 回帰テストを実行する。
 
 ```sh
-dotnet build NewsDialog.Avalonia.slnx -c Debug          # 0 警告 0 エラーを維持する
-dotnet run --project samples/NewsDemoApp           # デモ（緊急ブロッキングは Lhamiel インシデント模擬）
+dotnet build NewsDialog.Avalonia.slnx -c Debug
+dotnet test NewsDialog.Avalonia.slnx -c Debug
 ```
 
-- AOT 実機検証をするなら、`samples/NewsDemoApp` を `PublishAot` で publish し、更新フロー同様に「緊急表示→アクション→本文 WebView」が落ちないかを確認する。
+- クライアントまたは Worker のターゲティング規則を変更したときは、両者の意味論をそろえるため `node --test server/worker/test/targeting.test.mjs` も実行する。
+- NativeAOT、WebView、または依存関係に触れたときは、`dotnet publish samples/NewsDemoApp -c Release -r win-x64 -p:PublishAot=true` を実行し、必要に応じて `dotnet run --project samples/NewsDemoApp` で「緊急表示→アクション→本文 WebView」を確認する。
 
 ## 既読管理について
 
@@ -48,7 +53,7 @@ dotnet run --project samples/NewsDemoApp           # デモ（緊急ブロッキ
 
 ## ドメイン移行（2026-07 開始・期限 2027/05/31）
 
-屋号を **Kagayoi** に統一したため、配信ドメインを `nephilim.jp` から `kagayoi.com` へ移行中。方針の全体像はユーザーグローバルの `CLAUDE.md` §屋号とドメイン を参照する。
+屋号を **Kagayoi** に統一したため、配信ドメインを `nephilim.jp` から `kagayoi.com` へ移行中。方針の全体像と不可逆ガードは、ユーザーグローバルの `AGENTS.md`「事業固有の不可逆ガード」を参照する。
 
 - **旧ドメイン `nephilim.jp` はレジストラで廃止申請済みで 2027/05/31 に失効する**（延長しない）。それまでに出荷済みバイナリを新ドメインへ移行しきる。
 - 旧ホストの Worker route / custom domain は**期限まで消さない**。消すと出荷済みアプリの自動更新が止まる。

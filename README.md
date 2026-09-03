@@ -6,9 +6,6 @@ Avalonia 12 で動く **ソーシャルゲーム風お知らせ画面** ライ�
 
 > 🐈‍⬛ 「自動更新が壊れたから手動で更新して！」のような緊急アナウンスを、アプリ内から確実に伝えるために生まれました。
 
-![screenshot](docs/screenshot.png)
-<!-- スクリーンショットは docs/screenshot.png に配置してください -->
-
 ## 特徴
 
 - 📰 **一覧＋詳細**のソシャゲ風レイアウト（カテゴリ タブ・新着バッジ・重要度カラー）
@@ -20,6 +17,8 @@ Avalonia 12 で動く **ソーシャルゲーム風お知らせ画面** ライ�
 - ⚡ **NativeAOT 安全**（`IsAotCompatible`・JSON はソースジェネレータ・反射ゼロ）
 
 ## インストール
+
+NuGet.org に公開されたリリースは次で追加できます。
 
 ```sh
 dotnet add package NewsDialog.Avalonia
@@ -107,6 +106,7 @@ await ((NewsViewModel)NewsBody.DataContext).LoadAsync();
 
 本文は **`contentUrl`（HTML ページ）優先**、無ければ `inlineHtml`、それも無ければ `summary` を表示します。
 `contentUrl` と本文内のトップレベル遷移は HTTP / HTTPS のみ許可し、ライブラリ生成の `data:` URI と WebView 初期化時の `about:blank` を除くスキームは拒否します。
+既定の `OpenActionUrlWithShell: true` で OS ブラウザを開く `actionUrl` も HTTP / HTTPS のみ許可します。独自スキームをホスト側で処理する場合は `false` にして `ActionInvoked` を購読してください。
 
 ### ターゲティング（クライアント側フィルタ）
 
@@ -118,7 +118,7 @@ await ((NewsViewModel)NewsBody.DataContext).LoadAsync();
 ## 緊急ブロッキング告知
 
 `severity: "Emergency"` かつ `isBlocking: true` のお知らせがあると、通常一覧の前に **確認必須モーダル**を表示します。
-ユーザーが「確認」を押すまで通常画面には進めません。`actionUrl` を付けるとアクションボタンが出て、OS 既定ブラウザで開けます。
+対象が複数ある場合は 1 件ずつ表示し、すべて確認するまで通常画面には進めません。HTTP / HTTPS の `actionUrl` を付けると、OS 既定ブラウザで開くアクションボタンが出ます。
 
 ## ローカライズ
 
@@ -157,4 +157,4 @@ MIT License © ゆろち
 
 ## 開発者向け
 
-内部設計・コーディング規約・NativeAOT に関する注意は [`CLAUDE.md`](CLAUDE.md) を参照してください。
+内部設計は [`DESIGN.md`](DESIGN.md)、コーディング規約・検証手順・NativeAOT に関する注意は [`AGENTS.md`](AGENTS.md) を参照してください。
