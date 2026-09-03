@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using SuperLightLogger;
 
 namespace NewsDialog;
 
@@ -17,6 +18,7 @@ namespace NewsDialog;
 public sealed class HttpJsonNewsSource : INewsSource
 {
     private static readonly HttpClient SharedClient = new() { Timeout = TimeSpan.FromSeconds(15) };
+    private static readonly ILog log = LogManager.GetLogger(typeof(HttpJsonNewsSource));
 
     private readonly Uri _baseUrl;
     private readonly HttpClient _http;
@@ -47,12 +49,56 @@ public sealed class HttpJsonNewsSource : INewsSource
         response.EnsureSuccessStatusCode();
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        var feed = await JsonSerializer
-            .DeserializeAsync(stream, NewsJsonContext.Default.NewsFeed, cancellationToken)
+        using var document = await JsonDocument
+            .ParseAsync(stream, cancellationToken: cancellationToken)
             .ConfigureAwait(false);
 
-        IReadOnlyList<NewsItem> items = feed?.Items ?? (IReadOnlyList<NewsItem>)Array.Empty<NewsItem>();
+        var items = DeserializeItems(document.RootElement);
         return NewsFilter.Apply(items, context);
+    }
+
+    private static IReadOnlyList<NewsItem> DeserializeItems(JsonElement root)
+    {
+        if (root.ValueKind != JsonValueKind.Object)
+            throw new JsonException("News feed root must be an object.");
+
+        JsonElement? itemsElement = null;
+        foreach (var property in root.EnumerateObject())
+        {
+            if (string.Equals(property.Name, "items", StringComparison.OrdinalIgnoreCase))
+            {
+                itemsElement = property.Value;
+                break;
+            }
+        }
+
+        if (itemsElement is null || itemsElement.Value.ValueKind == JsonValueKind.Null)
+            return Array.Empty<NewsItem>();
+        if (itemsElement.Value.ValueKind != JsonValueKind.Array)
+            throw new JsonException("News feed items must be an array.");
+
+        var items = new List<NewsItem>(itemsElement.Value.GetArrayLength());
+        var index = 0;
+        foreach (var itemElement in itemsElement.Value.EnumerateArray())
+        {
+            try
+            {
+                if (itemElement.ValueKind != JsonValueKind.Object)
+                    throw new JsonException("News item must be an object.");
+
+                var item = itemElement.Deserialize(NewsJsonContext.Default.NewsItem);
+                if (item is not null)
+                    items.Add(item);
+            }
+            catch (JsonException ex)
+            {
+                log.Error($"Skipped malformed news item at index {index}", ex);
+            }
+
+            index++;
+        }
+
+        return items;
     }
 
     private static Uri BuildUrl(Uri baseUrl, NewsContext context)

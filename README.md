@@ -106,11 +106,14 @@ await ((NewsViewModel)NewsBody.DataContext).LoadAsync();
 ```
 
 本文は **`contentUrl`（HTML ページ）優先**、無ければ `inlineHtml`、それも無ければ `summary` を表示します。
+`contentUrl` と本文内のトップレベル遷移は HTTP / HTTPS のみ許可し、ライブラリ生成の `data:` URI と WebView 初期化時の `about:blank` を除くスキームは拒否します。
 
 ### ターゲティング（クライアント側フィルタ）
 
 `minAppVersion` / `maxAppVersion` / `locales` / `expiresAt` を付けると、`NewsContext` に合致しないお知らせは自動で除外されます。
 （Cloudflare Worker でサーバ側ターゲティングする場合も同じフィールド設計で組めます → [`server/`](server/) 参照）
+
+バージョン値は `System.Version` 形式の数値 2〜4 要素（例: `1.0.173`）で指定します。省略した要素は `0` として比較され、未指定または形式不正な `AppVersion` ではバージョン制約付きのお知らせを表示しません。ロケールは BCP 47 の親タグへフォールバックするため、対象 `ja` は `ja-JP` に一致しますが、対象 `ja-JP` を `ja` へは広げません。
 
 ## 緊急ブロッキング告知
 

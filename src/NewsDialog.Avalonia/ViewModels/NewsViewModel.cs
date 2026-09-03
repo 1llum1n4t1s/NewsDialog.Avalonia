@@ -23,7 +23,7 @@ public sealed partial class NewsViewModel : ObservableObject
 
     private readonly INewsSource _source;
     private readonly List<NewsItem> _all = new();
-    private bool _blockingAcknowledged;
+    private readonly HashSet<NewsItem> _acknowledgedBlockingItems = new();
 
     /// <summary>取得元 (<see cref="INewsSource"/>) を直接渡して初期化する。</summary>
     public NewsViewModel(INewsSource source, NewsOptions? options = null)
@@ -101,14 +101,16 @@ public sealed partial class NewsViewModel : ObservableObject
 
     /// <summary>確認必須の緊急お知らせ (最重要・未確認の 1 件)。無ければ null。</summary>
     public NewsItem? BlockingItem
-        => _blockingAcknowledged
-            ? null
-            : _all.FirstOrDefault(static i => i is { Severity: NewsSeverity.Emergency, IsBlocking: true });
+        => _all.FirstOrDefault(i => i is { Severity: NewsSeverity.Emergency, IsBlocking: true }
+                                      && !_acknowledgedBlockingItems.Contains(i));
 
     /// <summary>緊急ブロッキングを表示中か。true の間は通常一覧 (WebView 含む) を隠す。</summary>
     public bool ShowBlocking => BlockingItem is not null;
 
-    /// <summary>選択中本文を WebView に流す URI。ContentUrl 優先、無ければ InlineHtml / Summary を data URI 化。</summary>
+    /// <summary>ユーザーがウィンドウを閉じられるか。未確認の緊急ブロッキング中は false。</summary>
+    public bool CanClose => !ShowBlocking;
+
+    /// <summary>選択中本文を WebView に流す URI。HTTP / HTTPS の ContentUrl を優先し、無ければ InlineHtml / Summary を data URI 化。</summary>
     public Uri? CurrentContentUri => BuildContentUri(SelectedItem);
 
     /// <summary>選択中お知らせにアクション URL があるか (ボタン表示制御)。</summary>
@@ -151,12 +153,18 @@ public sealed partial class NewsViewModel : ObservableObject
     public async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         State = NewsLoadState.Loading;
+        ErrorMessage = null;
+        FinalError = null;
+        if (FinalOutcome == NewsOutcome.Failed)
+            FinalOutcome = NewsOutcome.Closed;
+
         try
         {
             var fetched = await _source.FetchAsync(Options.Context, cancellationToken).ConfigureAwait(true);
             cancellationToken.ThrowIfCancellationRequested();
 
             _all.Clear();
+            _acknowledgedBlockingItems.Clear();
             _all.AddRange(fetched
                 .OrderByDescending(static i => i.Severity)
                 .ThenByDescending(static i => i.PublishedAt));
@@ -173,12 +181,14 @@ public sealed partial class NewsViewModel : ObservableObject
         }
         catch (OperationCanceledException)
         {
+            State = Items.Count == 0 ? NewsLoadState.Empty : NewsLoadState.Loaded;
             throw;
         }
         catch (Exception ex)
         {
             ErrorMessage = ex.Message;
             FinalError = ex;
+            FinalOutcome = NewsOutcome.Failed;
             State = NewsLoadState.Failed;
             log.Error("News load failed", ex);
             Options.RaiseErrorOccurred(ex);
@@ -233,6 +243,14 @@ public sealed partial class NewsViewModel : ObservableObject
         if (target?.ActionUrl is null)
             return;
 
+        if (Options.OpenActionUrlWithShell && !IsBrowserUrl(target.ActionUrl))
+        {
+            var ex = new ArgumentException("Action URL must use the HTTP or HTTPS scheme.", nameof(NewsItem.ActionUrl));
+            log.Error("Rejected unsupported action URL scheme", ex);
+            Options.RaiseErrorOccurred(ex);
+            return;
+        }
+
         ActionItem = target;
         FinalOutcome = NewsOutcome.ActionInvoked;
 
@@ -246,7 +264,10 @@ public sealed partial class NewsViewModel : ObservableObject
     [RelayCommand]
     private void AcknowledgeBlocking()
     {
-        _blockingAcknowledged = true;
+        if (BlockingItem is not { } item)
+            return;
+
+        _acknowledgedBlockingItems.Add(item);
         if (FinalOutcome == NewsOutcome.Closed)
             FinalOutcome = NewsOutcome.Acknowledged;
 
@@ -263,17 +284,23 @@ public sealed partial class NewsViewModel : ObservableObject
     {
         OnPropertyChanged(nameof(BlockingItem));
         OnPropertyChanged(nameof(ShowBlocking));
+        OnPropertyChanged(nameof(CanClose));
         OnPropertyChanged(nameof(BlockingHasAction));
         OnPropertyChanged(nameof(BlockingActionLabel));
     }
+
+    internal static bool IsBrowserUrl(Uri url)
+        => url.IsAbsoluteUri
+           && (string.Equals(url.Scheme, Uri.UriSchemeHttp, StringComparison.OrdinalIgnoreCase)
+               || string.Equals(url.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase));
 
     private static Uri? BuildContentUri(NewsItem? item)
     {
         if (item is null)
             return null;
 
-        if (item.ContentUrl is not null)
-            return item.ContentUrl;
+        if (item.ContentUrl is { } contentUrl && IsBrowserUrl(contentUrl))
+            return contentUrl;
 
         var html = item.InlineHtml
                    ?? (item.Summary is { Length: > 0 } summary

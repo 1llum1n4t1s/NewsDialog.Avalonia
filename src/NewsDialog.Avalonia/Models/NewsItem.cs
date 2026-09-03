@@ -24,7 +24,7 @@ public sealed class NewsItem
     [JsonConverter(typeof(JsonStringEnumConverter<NewsSeverity>))]
     public NewsSeverity Severity { get; set; } = NewsSeverity.Normal;
 
-    /// <summary>本文 HTML ページの URL (NativeWebView で表示)。<see cref="InlineHtml"/> と両方ある場合はこちら優先。</summary>
+    /// <summary>本文 HTML ページの URL (NativeWebView で表示)。HTTP / HTTPS のみ表示し、それ以外は <see cref="InlineHtml"/> / <see cref="Summary"/> にフォールバックする。</summary>
     public Uri? ContentUrl { get; set; }
 
     /// <summary>インライン HTML 本文 (サーバページを使わない場合)。data URI で WebView に流す。</summary>
@@ -42,7 +42,7 @@ public sealed class NewsItem
     /// <summary>アクションボタンのラベル。例: 「手動更新ページを開く」。null かつ <see cref="ActionUrl"/> も null ならボタン非表示。</summary>
     public string? ActionLabel { get; set; }
 
-    /// <summary>アクションボタン押下時に開く URL。</summary>
+    /// <summary>アクションボタン押下時に開く URL。シェルで開く場合は HTTP / HTTPS のみ許可される。</summary>
     public Uri? ActionUrl { get; set; }
 
     /// <summary>対象とする最小アプリバージョン (含む)。クライアント側フィルタ用。null = 下限なし。例: "1.0.0"。</summary>
@@ -51,7 +51,7 @@ public sealed class NewsItem
     /// <summary>対象とする最大アプリバージョン (含む)。クライアント側フィルタ用。null = 上限なし。例: "1.0.172"。</summary>
     public string? MaxAppVersion { get; set; }
 
-    /// <summary>対象ロケール (例: ["ja","en"])。null / 空 = 全ロケール。</summary>
+    /// <summary>対象ロケール (例: ["ja","en"])。null / 空 = 全ロケール。地域付きの要求ロケールは親タグへフォールバックする。</summary>
     public string[]? Locales { get; set; }
 
     /// <summary>表示期限。これを過ぎたら一覧から除外。null = 無期限。</summary>

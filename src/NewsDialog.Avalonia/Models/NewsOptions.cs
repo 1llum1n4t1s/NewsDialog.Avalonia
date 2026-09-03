@@ -45,7 +45,7 @@ public sealed class NewsOptions
     /// <summary>配信バックエンドへ送る実行コンテキスト (appVersion / locale / channel)。</summary>
     public NewsContext Context { get; set; } = new();
 
-    /// <summary>アクションボタン押下時、URL を OS 既定ブラウザで開くか。既定 = true。</summary>
+    /// <summary>アクションボタン押下時、HTTP / HTTPS URL を OS 既定ブラウザで開くか。既定 = true。</summary>
     public bool OpenActionUrlWithShell { get; set; } = true;
 
     // ---------------- コールバック / イベント ----------------

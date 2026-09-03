@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace NewsDialog;
@@ -25,14 +26,23 @@ internal static class NewsFilter
 
             if (context.Locale is { Length: > 0 } loc
                 && it.Locales is { Length: > 0 } locales
-                && !locales.Any(l => string.Equals(l, loc, StringComparison.OrdinalIgnoreCase)))
+                && !locales.Any(l => MatchesLocale(loc, l)))
                 continue;
 
-            if (appVer is not null)
+            var hasMinVersion = !string.IsNullOrEmpty(it.MinAppVersion);
+            var hasMaxVersion = !string.IsNullOrEmpty(it.MaxAppVersion);
+            if (hasMinVersion || hasMaxVersion)
             {
-                if (TryParse(it.MinAppVersion) is { } min && appVer < min)
+                if (appVer is null)
                     continue;
-                if (TryParse(it.MaxAppVersion) is { } max && appVer > max)
+
+                var min = hasMinVersion ? TryParse(it.MinAppVersion) : null;
+                var max = hasMaxVersion ? TryParse(it.MaxAppVersion) : null;
+                if ((hasMinVersion && min is null) || (hasMaxVersion && max is null))
+                    continue;
+                if (min is not null && appVer < min)
+                    continue;
+                if (max is not null && appVer > max)
                     continue;
             }
 
@@ -42,6 +52,35 @@ internal static class NewsFilter
         return result;
     }
 
+    private static bool MatchesLocale(string requestedLocale, string? itemLocale)
+    {
+        if (string.IsNullOrEmpty(itemLocale))
+            return false;
+
+        if (string.Equals(requestedLocale, itemLocale, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return requestedLocale.Length > itemLocale.Length
+               && requestedLocale.StartsWith(itemLocale, StringComparison.OrdinalIgnoreCase)
+               && requestedLocale[itemLocale.Length] == '-';
+    }
+
     private static Version? TryParse(string? value)
-        => Version.TryParse(value, out var v) ? v : null;
+    {
+        if (string.IsNullOrEmpty(value))
+            return null;
+
+        var parts = value.Split('.');
+        if (parts.Length is < 2 or > 4)
+            return null;
+
+        Span<int> components = stackalloc int[4];
+        for (var index = 0; index < parts.Length; index++)
+        {
+            if (!int.TryParse(parts[index], NumberStyles.None, CultureInfo.InvariantCulture, out components[index]))
+                return null;
+        }
+
+        return new Version(components[0], components[1], components[2], components[3]);
+    }
 }

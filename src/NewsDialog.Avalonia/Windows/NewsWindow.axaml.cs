@@ -32,6 +32,21 @@ public partial class NewsWindow : Window
     {
     }
 
+    /// <inheritdoc />
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if (!_viewModel.CanClose
+            && !e.IsProgrammatic
+            && e.CloseReason is not (WindowCloseReason.OwnerWindowClosing
+                or WindowCloseReason.ApplicationShutdown
+                or WindowCloseReason.OSShutdown))
+        {
+            e.Cancel = true;
+        }
+
+        base.OnClosing(e);
+    }
+
     private static NewsViewModel CreateDesignViewModel()
         => new(new InMemoryNewsSource());
 
@@ -52,16 +67,27 @@ public partial class NewsWindow : Window
         var resolvedOptions = options ?? new NewsOptions();
         var vm = new NewsViewModel(source, resolvedOptions);
         var window = new NewsWindow(vm);
+        using var loadCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        EventHandler? closedHandler = (_, _) => loadCancellation.Cancel();
+        window.Closed += closedHandler;
 
-        // 取得はバックグラウンドで開始 (LoadAsync 内部で例外を捕捉し State=Failed にする)
-        _ = LoadInBackgroundAsync(vm, cancellationToken);
+        try
+        {
+            // 取得はバックグラウンドで開始し、ウィンドウが閉じたら中断する。
+            _ = LoadInBackgroundAsync(vm, loadCancellation.Token);
 
-        if (owner is not null)
-            await window.ShowDialog(owner).ConfigureAwait(true);
-        else
-            await ShowStandaloneAsync(window).ConfigureAwait(true);
+            if (owner is not null)
+                await window.ShowDialog(owner).ConfigureAwait(true);
+            else
+                await ShowStandaloneAsync(window).ConfigureAwait(true);
 
-        return new NewsResult(vm.FinalOutcome, vm.ActionItem, vm.FinalError);
+            return new NewsResult(vm.FinalOutcome, vm.ActionItem, vm.FinalError);
+        }
+        finally
+        {
+            window.Closed -= closedHandler;
+            loadCancellation.Cancel();
+        }
     }
 
     /// <summary>フィード URL から呼び出す便利オーバーロード。</summary>
@@ -159,7 +185,8 @@ public partial class NewsWindow : Window
 
     private void OnCloseClicked(object? sender, RoutedEventArgs e)
     {
-        Close();
+        if (_viewModel.CanClose)
+            Close();
         e.Handled = true;
     }
 }

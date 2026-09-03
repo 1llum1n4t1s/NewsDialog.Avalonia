@@ -32,27 +32,67 @@ const ANNOUNCEMENTS = [
   },
 ];
 
-/** "1.0.172" 形式を数値配列比較。a<b:-1 / a==b:0 / a>b:1 */
+const MAX_VERSION_COMPONENT = 2_147_483_647;
+
+/** System.Version と同じ 2〜4 個の数値形式を 4 要素へ正規化する。 */
+function parseVersion(value) {
+  if (typeof value !== "string") return null;
+
+  const parts = value.split(".");
+  if (parts.length < 2 || parts.length > 4) return null;
+
+  const components = [];
+  for (const part of parts) {
+    if (!/^\d+$/.test(part)) return null;
+
+    const component = Number(part);
+    if (!Number.isSafeInteger(component) || component > MAX_VERSION_COMPONENT) return null;
+    components.push(component);
+  }
+
+  while (components.length < 4) components.push(0);
+  return components;
+}
+
+/** 正規化済みの数値配列を比較。a<b:-1 / a==b:0 / a>b:1 */
 function compareVersion(a, b) {
-  const pa = String(a).split(".").map((n) => parseInt(n, 10) || 0);
-  const pb = String(b).split(".").map((n) => parseInt(n, 10) || 0);
-  const len = Math.max(pa.length, pb.length);
-  for (let i = 0; i < len; i++) {
-    const d = (pa[i] || 0) - (pb[i] || 0);
+  for (let i = 0; i < a.length; i++) {
+    const d = a[i] - b[i];
     if (d !== 0) return d < 0 ? -1 : 1;
   }
   return 0;
 }
 
+/** 要求ロケールを親タグへフォールバックして対象タグと比較する。 */
+function matchesLocale(requestedLocale, itemLocale) {
+  if (typeof requestedLocale !== "string" || typeof itemLocale !== "string") return false;
+
+  const requested = requestedLocale.toLowerCase();
+  const candidate = itemLocale.toLowerCase();
+  return requested === candidate || (requested.startsWith(candidate) && requested[candidate.length] === "-");
+}
+
 function targeted(items, { appVersion, locale }) {
   const now = Date.now();
+  const parsedAppVersion = parseVersion(appVersion);
+
   return items.filter((it) => {
     if (it.expiresAt && Date.parse(it.expiresAt) < now) return false;
-    if (locale && Array.isArray(it.locales) && it.locales.length && !it.locales.includes(locale)) return false;
-    if (appVersion) {
-      if (it.minAppVersion && compareVersion(appVersion, it.minAppVersion) < 0) return false;
-      if (it.maxAppVersion && compareVersion(appVersion, it.maxAppVersion) > 0) return false;
+    if (typeof locale === "string" && locale.length > 0 && Array.isArray(it.locales) && it.locales.length
+        && !it.locales.some((itemLocale) => matchesLocale(locale, itemLocale))) return false;
+
+    const hasMinVersion = typeof it.minAppVersion === "string" && it.minAppVersion.length > 0;
+    const hasMaxVersion = typeof it.maxAppVersion === "string" && it.maxAppVersion.length > 0;
+    if (hasMinVersion || hasMaxVersion) {
+      if (!parsedAppVersion) return false;
+
+      const minVersion = hasMinVersion ? parseVersion(it.minAppVersion) : null;
+      const maxVersion = hasMaxVersion ? parseVersion(it.maxAppVersion) : null;
+      if ((hasMinVersion && !minVersion) || (hasMaxVersion && !maxVersion)) return false;
+      if (minVersion && compareVersion(parsedAppVersion, minVersion) < 0) return false;
+      if (maxVersion && compareVersion(parsedAppVersion, maxVersion) > 0) return false;
     }
+
     return true;
   });
 }

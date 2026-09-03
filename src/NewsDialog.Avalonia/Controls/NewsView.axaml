@@ -6,7 +6,8 @@
              xmlns:wv="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.WebView"
              mc:Ignorable="d" d:DesignWidth="820" d:DesignHeight="560"
              x:Class="NewsDialog.NewsView"
-             x:DataType="vm:NewsViewModel">
+             x:DataType="vm:NewsViewModel"
+             x:Name="Root">
 
   <UserControl.Resources>
     <ResourceDictionary>
@@ -70,7 +71,7 @@
                       <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
                       <Border IsVisible="{Binding IsNew}" VerticalAlignment="Center"
                               Background="{DynamicResource News.AccentBrush}" CornerRadius="3" Padding="4,0">
-                        <TextBlock Text="NEW" FontSize="9" Foreground="White"/>
+                        <TextBlock Text="{Binding #Root.DataContext.Strings.NewBadge}" FontSize="9" Foreground="White"/>
                       </Border>
                     </StackPanel>
                     <TextBlock Text="{Binding PublishedAt, StringFormat='{}{0:yyyy-MM-dd}'}"
@@ -92,7 +93,9 @@
 
           <Border Grid.Row="1" CornerRadius="6" ClipToBounds="True"
                   BorderThickness="1" BorderBrush="{DynamicResource News.BorderBrush}">
-            <wv:NativeWebView Source="{Binding CurrentContentUri}"/>
+            <wv:NativeWebView Source="{Binding CurrentContentUri}"
+                              NavigationStarted="OnWebViewNavigationStarted"
+                              NewWindowRequested="OnWebViewNewWindowRequested"/>
           </Border>
 
           <Button Grid.Row="2" Margin="0,10,0,0" Classes="primary" HorizontalAlignment="Right"

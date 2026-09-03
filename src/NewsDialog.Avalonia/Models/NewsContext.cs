@@ -7,10 +7,10 @@ namespace NewsDialog;
 /// </summary>
 public sealed class NewsContext
 {
-    /// <summary>現在のアプリバージョン。例: "1.0.172"。</summary>
+    /// <summary>現在のアプリバージョン。System.Version 形式の数値 2〜4 要素で指定する。例: "1.0.172"。未指定または形式不正時は、バージョン制約付きのお知らせを表示しない。</summary>
     public string? AppVersion { get; set; }
 
-    /// <summary>UI ロケール。例: "ja"。</summary>
+    /// <summary>UI ロケール (BCP 47)。例: "ja"。地域付きの要求ロケールは親タグへフォールバックする (例: "ja-JP" は "ja" 対象にも一致)。</summary>
     public string? Locale { get; set; }
 
     /// <summary>配信チャンネル。例: "release"。</summary>

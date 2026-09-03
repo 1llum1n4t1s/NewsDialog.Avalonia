@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 
 namespace NewsDialog;
@@ -13,4 +14,22 @@ public partial class NewsView : UserControl
     {
         InitializeComponent();
     }
+
+    private void OnWebViewNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
+    {
+        if (!IsAllowedContentNavigation(e.Request))
+            e.Cancel = true;
+    }
+
+    private void OnWebViewNewWindowRequested(object? sender, WebViewNewWindowRequestedEventArgs e)
+    {
+        if (!IsAllowedContentNavigation(e.Request))
+            e.Handled = true;
+    }
+
+    private static bool IsAllowedContentNavigation(Uri? uri)
+        => uri is not null
+           && (NewsViewModel.IsBrowserUrl(uri)
+           || string.Equals(uri.Scheme, "data", StringComparison.OrdinalIgnoreCase)
+           || string.Equals(uri.OriginalString, "about:blank", StringComparison.OrdinalIgnoreCase));
 }
