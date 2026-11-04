@@ -1,0 +1,38 @@
+name: Worker publisher tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publisher-tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publisher:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.4.4
+      - name: Test publisher with local HTTP fixtures
+        shell: pwsh
+        env:
+          WORKER_PUBLISHER_TEST_ROOT: ${{ runner.temp }}
+        run: |
+          bun test --timeout 60000 server/worker/worker-publisher.test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

@@ -19,9 +19,14 @@ CDN キャッシュが効くので一番安い・速い。緊急時は `news.jso
 `worker/` に最小サンプル。クライアントが送る `?appVersion=&locale=&channel=` を見て、
 **サーバ側で「壊れている 1.0.173 以下にだけ緊急告知を返す」**等の狙い撃ちができる（静的 JSON では不可）。
 
-```sh
+PowerShell 7 で、Workers Scripts Edit 権限の API token と Cloudflare account ID を指定します。
+route を有効にした場合は対象 zone の Zone Read / Workers Routes Edit 権限も必要です。
+
+```powershell
 cd worker
-npx wrangler deploy
+$env:CLOUDFLARE_API_TOKEN = '<公開用 API token>'
+$env:CLOUDFLARE_ACCOUNT_ID = '<Cloudflare account ID>'
+pwsh -NoProfile -File ./Publish-CloudflareWorker.ps1 -ConfigPath ./wrangler.toml
 ```
 
 - お知らせをコードに持つ最小例。運用では **Workers KV / D1 / R2** に移すと管理画面や即時更新がしやすい（`wrangler.toml` と `index.js` のコメント参照）。
