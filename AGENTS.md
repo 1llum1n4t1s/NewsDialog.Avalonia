@@ -44,7 +44,7 @@ dotnet build NewsDialog.Avalonia.slnx -c Debug
 dotnet test NewsDialog.Avalonia.slnx -c Debug
 ```
 
-- クライアントまたは Worker のターゲティング規則を変更したときは、両者の意味論をそろえるため `node --test server/worker/test/targeting.test.mjs` も実行する。
+- クライアントまたは Worker のターゲティング規則を変更したときは、両者の意味論をそろえるため Bun 1.4.4 で `bun test server/worker/test/targeting.test.mjs` も実行する。
 - NativeAOT、WebView、または依存関係に触れたときは、`dotnet publish samples/NewsDemoApp -c Release -r win-x64 -p:PublishAot=true` を実行し、必要に応じて `dotnet run --project samples/NewsDemoApp` で「緊急表示→アクション→本文 WebView」を確認する。
 
 ## 既読管理について
