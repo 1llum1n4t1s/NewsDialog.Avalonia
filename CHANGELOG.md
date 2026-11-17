@@ -4,6 +4,14 @@ Git のバージョン記録・コミット差分と既存の変更履歴をも�
 
 ## 未リリース
 
+## [1.0.1] — Git 記録日: 2026-11-18
+
+- 対象フレームワークを net10.0 から net11.0 へ移行（.NET 11 SDK が必要）
+- Avalonia 系を 12.1.4、SuperLightLogger を 1.0.19 など、依存を最新の安定版へ更新
+- Cloudflare Worker 配信例の公開スクリプトを追加
+
+出典: [変更差分](https://github.com/1llum1n4t1s/NewsDialog.Avalonia/compare/release/1.0.0...release/1.0.1)。
+
 ## [1.0.0] — Git 記録日: 2026-09-03
 
 - 設計文書と利用案内を整備
