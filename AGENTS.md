@@ -37,7 +37,7 @@
 
 ## ビルド / テスト / 動作確認
 
-全プロジェクトは `net10.0` を対象にするため、.NET 10 SDK を使う。通常の変更ではビルドと .NET 回帰テストを実行する。
+全プロジェクトは `net11.0` を対象にするため、.NET 11 SDK を使う。通常の変更ではビルドと .NET 回帰テストを実行する。
 
 ```sh
 dotnet build NewsDialog.Avalonia.slnx -c Debug
