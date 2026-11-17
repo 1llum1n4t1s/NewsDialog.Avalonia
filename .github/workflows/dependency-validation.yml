@@ -1,6 +1,11 @@
 name: Dependency validation
 
+# .NET アプリ本体の restore・build・既存回帰テストを、main への push と全 PR
+# （Dependabot を含む）と手動実行で通す。配信 workflow は無い。
+# 公開リポジトリなので GitHub 提供ランナーで動かす。Worker publisher は publisher-tests.yml が担当。
 on:
+  push:
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
@@ -8,13 +13,13 @@ on:
 permissions:
   contents: read
 
+# PR は古い実行を取り消す。main への push は各コミットの結果を残す。
 concurrency:
   group: dependency-validation-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   validate:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.user.login == 'dependabot[bot]'
     runs-on: windows-latest
     timeout-minutes: 45
     defaults:
